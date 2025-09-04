@@ -4,16 +4,20 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
 
 @Document("employee")
-public class Employee implements UserDetails {
+public class EmployeeEntity implements UserDetails {
 
     @Id
     private String id;
+
+    private String avatar;
+
 
     private String badgeNumber;
 
@@ -22,10 +26,13 @@ public class Employee implements UserDetails {
     private String email;
 
     @DBRef
-    private String relatedBranchId;
+    private BranchEntity branch;
 
     @DBRef
-    private String relatedDepartmentId;
+    private DepartmentEntity department;
+
+    @DBRef
+    private List<ServiceEntity> services;
 
     private String password;
 
@@ -35,18 +42,25 @@ public class Employee implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
     }
+
+    private String status;
+
+    private String note;
+
+
 
     @Override
     public String getPassword() {
-        return "";
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return "";
+        return this.username;
     }
+
 
     @Override
     public boolean isAccountNonExpired() {
@@ -100,20 +114,28 @@ public class Employee implements UserDetails {
         this.email = email;
     }
 
-    public String getRelatedBranchId() {
-        return relatedBranchId;
+    public List<ServiceEntity> getServices() {
+        return services;
     }
 
-    public void setRelatedBranchId(String relatedBranchId) {
-        this.relatedBranchId = relatedBranchId;
+    public void setServices(List<ServiceEntity> services) {
+        this.services = services;
     }
 
-    public String getRelatedDepartmentId() {
-        return relatedDepartmentId;
+    public BranchEntity getBranch() {
+        return branch;
     }
 
-    public void setRelatedDepartmentId(String relatedDepartmentId) {
-        this.relatedDepartmentId = relatedDepartmentId;
+    public void setBranch(BranchEntity branch) {
+        this.branch = branch;
+    }
+
+    public DepartmentEntity getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(DepartmentEntity department) {
+        this.department = department;
     }
 
     public void setPassword(String password) {
@@ -130,5 +152,36 @@ public class Employee implements UserDetails {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+
+    public int assignedServicesCount()
+    {
+
+        return this.getServices().size();
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }
