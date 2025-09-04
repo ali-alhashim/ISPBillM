@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Bills & Payments</title>
+</head>
+<body>
+<div layout:fragment="page-title">Bills & Payments</div>
+
+<div layout:fragment="page-actions">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPaymentModal">
+        <i class="fas fa-plus"></i> Record Payment
+    </button>
+</div>
+
+<div layout:fragment="content">
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Billed</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalBilled}">$12,560.00</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-invoice-dollar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Paid</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalPaid}">$11,845.00</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalPending}">$715.00</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Overdue</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalOverdue}">$230.00</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form id="filterForm">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label for="serviceFilter" class="form-label">Service</label>
+                        <select class="form-select" id="serviceFilter" name="service">
+                            <option value="">All Services</option>
+                            <option value="SRV-001">SRV-001 - STC</option>
+                            <option value="SRV-002">SRV-002 - Mobily</option>
+                            <option value="SRV-003">SRV-003 - Zain</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="statusFilter" class="form-label">Status</label>
+                        <select class="form-select" id="statusFilter" name="status">
+                            <option value="">All Statuses</option>
+                            <option value="Paid">Paid</option>
+                            <option value="Unpaid">Unpaid</option>
+                            <option value="Overdue">Overdue</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="monthFilter" class="form-label">Month</label>
+                        <select class="form-select" id="monthFilter" name="month">
+                            <option value="">All Months</option>
+                            <option value="2023-09">September 2023</option>
+                            <option value="2023-08">August 2023</option>
+                            <option value="2023-07">July 2023</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="searchInput" class="form-label">Search</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="searchInput" placeholder="Search bills...">
+                            <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payments Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Payment History</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="paymentsTable" width="100%" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th>Service ID</th>
+                        <th>Account Number</th>
+                        <th>Billing Period</th>
+                        <th>Due Date</th>
+                        <th>Payment Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Payment Method</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="payment : ${payments}">
+                        <td th:text="${payment.serviceId}">SRV-001</td>
+                        <td th:text="${payment.accountNumber}">ACC-12345</td>
+                        <td th:text="${payment.billingPeriod}">September 2023</td>
+                        <td th:text="${payment.dueDate}">2023-09-05</td>
+                        <td th:text="${payment.paymentDate}">2023-09-03</td>
+                        <td th:text="${payment.amount}">$25.00</td>
+                        <td>
+                            <span class="badge bg-success" th:if="${payment.status == 'Paid'}">Paid</span>
+                            <span class="badge bg-warning" th:if="${payment.status == 'Unpaid'}">Unpaid</span>
+                            <span class="badge bg-danger" th:if="${payment.status == 'Overdue'}">Overdue</span>
+                        </td>
+                        <td th:text="${payment.paymentMethod}">Credit Card</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-sm btn-info view-payment" data-bs-toggle="modal" data-bs-target="#viewPaymentModal" th:data-id="${payment.id}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-primary edit-payment" data-bs-toggle="modal" data-bs-target="#addPaymentModal" th:data-id="${payment.id}" th:if="${payment.status != 'Paid'}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-success record-payment" th:data-id="${payment.id}" th:if="${payment.status != 'Paid'}">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Payment Modal -->
+    <div class="modal fade" id="addPaymentModal" tabindex="-1" aria-labelledby="addPaymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPaymentModalLabel">Record Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="paymentForm" th:action="@{/payments/save}" th:object="${payment}" method="post">
+                        <input type="hidden" id="paymentId" th:field="*{id}">
+                        <div class="mb-3">
+                            <label for="service" class="form-label">Service</label>
+                            <select class="form-select" id="service" th:field="*{serviceId}" required>
+                                <option value="">Select Service</option>
+                                <option value="SRV-001">SRV-001 - STC - ACC-12345</option>
+                                <option value="SRV-002">SRV-002 - Mobily - ACC-23456</option>
+                                <option value="SRV-003">SRV-003 - Zain - ACC-34567</option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('serviceId')}" th:errors="*{serviceId}">Service is required</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="billingPeriod" class="form-label">Billing Period</label>
+                            <input type="text" class="form-control" id="billingPeriod" th:field="*{billingPeriod}" placeholder="e.g., September 2023" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('billingPeriod')}" th:errors="*{billingPeriod}">Billing Period is required</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dueDate" class="form-label">Due Date</label>
+                            <input type="date" class="form-control" id="dueDate" th:field="*{dueDate}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('dueDate')}" th:errors="*{dueDate}">Due Date is required</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="amount" th:field="*{amount}" step="0.01" min="0" required>
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}">Valid amount is required</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="paymentDate" class="form-label">Payment Date</label>
+                            <input type="date" class="form-control" id="paymentDate" th:field="*{paymentDate}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('paymentDate')}" th:errors="*{paymentDate}">Payment Date is required</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="paymentMethod" class="form-label">Payment Method</label>
+                            <select class="form-select" id="paymentMethod" th:field="*{paymentMethod}" required>
+                                <option value="">Select Payment Method</option>
+                                <option value="Credit Card">Credit Card</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Check">Check</option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('paymentMethod')}" th:errors="*{paymentMethod}">Payment Method is required</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" th:field="*{status}" required>
+                                <option value="Paid">Paid</option>
+                                <option value="Unpaid">Unpaid</option>
+                                <option value="Overdue">Overdue</option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('status')}" th:errors="*{status}">Status is required</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="notes" th:field="*{notes}" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="savePayment">Save Payment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Payment Modal -->
+    <div class="modal fade" id="viewPaymentModal" tabindex="-1" aria-labelledby="viewPaymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewPaymentModalLabel">Payment Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Service ID:</strong> <span id="viewServiceId"></span></p>
+                            <p><strong>Account Number:</strong> <span id="viewAccountNumber"></span></p>
+                            <p><strong>Billing Period:</strong> <span id="viewBillingPeriod"></span></p>
+                            <p><strong>Due Date:</strong> <span id="viewDueDate"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Payment Date:</strong> <span id="viewPaymentDate"></span></p>
+                            <p><strong>Amount:</strong> <span id="viewAmount"></span></p>
+                            <p><strong>Status:</strong> <span id="viewStatus"></span></p>
+                            <p><strong>Payment Method:</strong> <span id="viewPaymentMethod"></span></p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <p><strong>Notes:</strong></p>
+                        <p id="viewNotes"></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary edit-from-view" data-bs-toggle="modal" data-bs-target="#addPaymentModal">Edit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Record Payment Modal -->
+    <div class="modal fade" id="recordPaymentModal" tabindex="-1" aria-labelledby="recordPaymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="recordPaymentModalLabel">Record Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="recordPaymentForm">
+                        <input type="hidden" id="recordPaymentId">
+                        <div class="mb-3">
+                            <label for="recordPaymentDate" class="form-label">Payment Date</label>
+                            <input type="date" class="form-control" id="recordPaymentDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="recordPaymentMethod" class="form-label">Payment Method</label>
+                            <select class="form-select" id="recordPaymentMethod" required>
+                                <option value="">Select Payment Method</option>
+                                <option value="Credit Card">Credit Card</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Check">Check</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="recordAmount" class="form-label">Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="recordAmount" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="recordNotes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="recordNotes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" id="confirmRecordPayment">Record Payment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <script>
+        $(document).ready(function() {
+            // Initialize DataTable
+            const paymentsTable = $('#paymentsTable').DataTable({
+                responsive: true,
+                pageLength: 10,
+                dom: '<"row"<"col-sm-6"l><"col-sm-6"f>>rtip'
+            });
+
+            // Filter functionality
+            $('#serviceFilter, #statusFilter, #monthFilter').on('change', function() {
+                paymentsTable.draw();
+            });
+
+            $('#searchButton').on('click', function() {
+                paymentsTable.search($('#searchInput').val()).draw();
+            });
+
+            $('#searchInput').on('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    paymentsTable.search($(this).val()).draw();
+                }
+            });
+
+            // View Payment
+            $('.view-payment').on('click', function() {
+                const paymentId = $(this).data('id');
+                // In a real application, you would fetch the payment details via AJAX
+                // For this example, we'll just show the modal
+                $('#viewPaymentModal').modal('show');
+            });
+
+            // Edit Payment
+            $('.edit-payment').on('click', function() {
+                const paymentId = $(this).data('id');
+                // In a real application, you would fetch the payment details via AJAX
+                // For this example, we'll just show the modal
+                $('#addPaymentModalLabel').text('Edit Payment');
+                $('#paymentId').val(paymentId);
+                $('#addPaymentModal').modal('show');
+            });
+
+            // Record Payment
+            $('.record-payment').on('click', function() {
+                const paymentId = $(this).data('id');
+                $('#recordPaymentId').val(paymentId);
+                $('#recordPaymentModal').modal('show');
+            });
+
+            // Reset form when modal is closed
+            $('#addPaymentModal').on('hidden.bs.modal', function() {
+                $('#paymentForm')[0].reset();
+                $('#addPaymentModalLabel').text('Record Payment');
+                $('#paymentId').val('');
+            });
+
+            $('#recordPaymentModal').on('hidden.bs.modal', function() {
+                $('#recordPaymentForm')[0].reset();
+                $('#recordPaymentId').val('');
+            });
+
+            // Save Payment
+            $('#savePayment').on('click', function() {
+                // In a real application, you would submit the form via AJAX
+                // For this example, we'll just validate and show a success message
+                if ($('#paymentForm')[0].checkValidity()) {
+                    $('#addPaymentModal').modal('hide');
+                    const alert = $('<div class="alert alert-success alert-dismissible fade show" role="alert">Payment saved successfully.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                    $('.content').prepend(alert);
+                    setTimeout(function() {
+                        alert.alert('close');
+                    }, 3000);
+                } else {
+                    $('#paymentForm')[0].reportValidity();
+                }
+            });
+
+            // Confirm Record Payment
+            $('#confirmRecordPayment').on('click', function() {
+                // In a real application, you would submit the form via AJAX
+                // For this example, we'll just validate and show a success message
+                if ($('#recordPaymentForm')[0].checkValidity()) {
+                    $('#recordPaymentModal').modal('hide');
+                    const alert = $('<div class="alert alert-success alert-dismissible fade show" role="alert">Payment recorded successfully.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                    $('.content').prepend(alert);
+                    setTimeout(function() {
+                        alert.alert('close');
+                    }, 3000);
+                } else {
+                    $('#recordPaymentForm')[0].reportValidity();
+                }
+            });
+
+            // Edit from View button
+            $('.edit-from-view').on('click', function() {
+                $('#viewPaymentModal').modal('hide');
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <title>Dashboard</title>
+</head>
+<body>
+<div layout:fragment="page-title">Dashboard</div>
+
+<div layout:fragment="content">
+  <!-- Metrics Cards -->
+  <div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card metric-card border-left-primary shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Services</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalServices}">256</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-cogs metric-icon text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card metric-card border-left-warning shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending Payments</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${pendingPayments}">18</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-credit-card metric-icon text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card metric-card border-left-success shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Active Services</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${activeServices}">42</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-server metric-icon text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card metric-card border-left-info shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Employees</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalEmployees}">32</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-users metric-icon text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Services -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 font-weight-bold text-primary">Recently Added Services</h6>
+      <div class="dropdown no-arrow">
+        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+          <li><a class="dropdown-item" href="/services">View All</a></li>
+          <li><a class="dropdown-item" href="/services/new">Add New</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered" id="recentServicesTable" width="100%" cellspacing="0">
+          <thead>
+          <tr>
+            <th>Service ID</th>
+            <th>Provider</th>
+            <th>Account Number</th>
+            <th>Monthly Fee</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="service : ${recentServices}">
+            <td th:text="${service.id}">SRV-001</td>
+            <td th:text="${service.provider}">STC</td>
+            <td th:text="${service.accountNumber}">ACC-12345</td>
+            <td th:text="${service.monthlyFee}">$25.00</td>
+            <td>
+              <span class="badge bg-success" th:if="${service.status == 'Active'}">Active</span>
+              <span class="badge bg-secondary" th:if="${service.status == 'Inactive'}">Inactive</span>
+            </td>
+            <td>
+              <a th:href="@{/services/{id}(id=${service.id})}" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
+              <a th:href="@{/services/edit/{id}(id=${service.id})}" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Status Chart -->
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Payment Status Overview</h6>
+        </div>
+        <div class="card-body">
+          <div class="chart-area">
+            <canvas id="paymentStatusChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Services by Provider</h6>
+        </div>
+        <div class="card-body">
+          <div class="chart-pie">
+            <canvas id="servicesByProviderChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<th:block layout:fragment="scripts">
+  <script>
+    // Initialize charts
+    document.addEventListener('DOMContentLoaded', function() {
+        // Payment Status Chart
+        const paymentStatusCtx = document.getElementById('paymentStatusChart').getContext('2d');
+        const paymentStatusChart = new Chart(paymentStatusCtx, {
+            type: 'bar',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                datasets: [{
+                    label: 'Paid',
+                    data: [120, 135, 125, 140, 130, 145],
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Unpaid',
+                    data: [20, 15, 25, 10, 20, 5],
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Services by Provider Chart
+        const servicesByProviderCtx = document.getElementById('servicesByProviderChart').getContext('2d');
+        const servicesByProviderChart = new Chart(servicesByProviderCtx, {
+            type: 'pie',
+            data: {
+                labels: ['STC', 'Mobily', 'Zain', 'Other'],
+                datasets: [{
+                    data: [120, 80, 40, 16],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    });
+  </script>
+</th:block>
+</body>
+</html>
