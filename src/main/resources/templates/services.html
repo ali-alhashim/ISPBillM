@@ -87,7 +87,7 @@
                 <table class="table table-bordered" id="servicesTable" width="100%" cellspacing="0">
                     <thead>
                     <tr>
-                        <th>Service ID</th>
+                        <th>Service Type</th>
                         <th>Provider</th>
                         <th>Account Number</th>
                         <th>Serial Number</th>
@@ -100,7 +100,7 @@
                     </thead>
                     <tbody>
                     <tr th:if="${services != null}" th:each="service : ${services}">
-                        <td th:text="${service.id}">SRV-001</td>
+                        <td th:text="${service.type}">SIM-Card</td>
                         <td th:text="${service.provider}">STC</td>
                         <td th:text="${service.accountNumber}">ACC-12345</td>
                         <td th:text="${service.serialNumber}">SN-67890</td>
@@ -110,7 +110,9 @@
                             <span class="badge bg-success" th:if="${service.status == 'Active'}">Active</span>
                             <span class="badge bg-secondary" th:if="${service.status == 'Inactive'}">Inactive</span>
                         </td>
-                        <td th:text="${service.assignedTo}">IT Department</td>
+
+                        <td th:text="${service.employee != null ? service.employee.name : (service.department != null ? service.department.name : service.branch.name)}">IT Department</td>
+
                         <td class="action-buttons">
                             <button class="btn btn-sm btn-info view-service" data-bs-toggle="modal" data-bs-target="#viewServiceModal" th:data-id="${service.id}">
                                 <i class="fas fa-eye"></i>
@@ -201,13 +203,13 @@
                                 <select class="form-select" id="assignedTo" th:field="*{assignedToId}" required>
                                     <option value="">Select Employee, Department or Branch</option>
                                     <optgroup label="Employees">
-                                        <option th:each="employee:${employees}" th:text="${employee.name +' - '+ employee.badgeNumber}" th:value="${'employee-' + employee.id}"></option>
+                                        <option th:each="employee:${employees}" th:text="${employee.name +' - '+ employee.badgeNumber}" th:value="${'employee--' + employee.id}"></option>
                                     </optgroup>
                                     <optgroup label="Departments">
-                                        <option th:each="department:${departments}" th:text="${department.name}" th:value="${'department-' + department.id}"></option>
+                                        <option th:each="department:${departments}" th:text="${department.name}" th:value="${'department--' + department.id}"></option>
                                     </optgroup>
                                     <optgroup label="Branches">
-                                        <option th:each="branch:${branches}" th:text="${branch.name}" th:value="${'branch-' + branch.id}"></option>
+                                        <option th:each="branch:${branches}" th:text="${branch.name}" th:value="${'branch--' + branch.id}"></option>
                                     </optgroup>
                                 </select>
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('assignedToId')}" th:errors="*{assignedToId}">Assignment is required</div>
@@ -375,15 +377,12 @@
 
             // Save Service
             $('#saveService').on('click', function() {
-                // In a real application, you would submit the form via AJAX
-                // For this example, we'll just validate and show a success message
+
                 if ($('#serviceForm')[0].checkValidity()) {
                     $('#addServiceModal').modal('hide');
-                    const alert = $('<div class="alert alert-success alert-dismissible fade show" role="alert">Service saved successfully.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
-                    $('.content').prepend(alert);
-                    setTimeout(function() {
-                        alert.alert('close');
-                    }, 3000);
+
+                     $('#serviceForm').submit();
+
                 } else {
                     $('#serviceForm')[0].reportValidity();
                 }
