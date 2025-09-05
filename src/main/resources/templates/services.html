@@ -5,9 +5,20 @@
 <head>
     <title>Services Management</title>
     <style>
+        /* Ensure Select2 dropdown appears above other elements */
         .select2-container--open {
-    z-index: 99999;
-}
+            z-index: 99999 !important;
+        }
+
+        /* Make sure the search input is visible and accessible */
+        .select2-search__field {
+            width: 100% !important;
+        }
+
+        /* Additional styling for better visibility */
+        .select2-container {
+            z-index: 9999;
+        }
     </style>
 </head>
 <body>
@@ -45,14 +56,12 @@
                     </div>
                     <div class="col-md-3">
                         <label for="assignedToFilter" class="form-label">Assigned To</label>
-
                         <select class="form-select" id="assignedToFilter" name="assignedTo">
                             <option value="">All</option>
                             <option value="employee">Employees</option>
                             <option value="department">Departments</option>
                             <option value="branch">Branches</option>
                         </select>
-
                     </div>
                     <div class="col-md-3">
                         <label for="searchInput" class="form-label">Search</label>
@@ -157,7 +166,6 @@
                                     <option value="Fiber-Internet">Fiber-Internet</option>
                                     <option value="IP-VPN">IP-VPN</option>
                                     <option value="IP-VPN">LandLine</option>
-
                                 </select>
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('status')}" th:errors="*{status}">Status is required</div>
                             </div>
@@ -190,23 +198,18 @@
                             </div>
                             <div class="col-12">
                                 <label for="assignedTo" class="form-label">Assign To</label>
-
                                 <select class="form-select" id="assignedTo" th:field="*{assignedToId}" required>
                                     <option value="">Select Employee, Department or Branch</option>
-
                                     <optgroup label="Employees">
-                                        <option th:each="employee:${employees}" th:text="${employee.name}" th:value="${'employee-' + employee.id}"></option>
+                                        <option th:each="employee:${employees}" th:text="${employee.name +' - '+ employee.badgeNumber}" th:value="${'employee-' + employee.id}"></option>
                                     </optgroup>
-
                                     <optgroup label="Departments">
                                         <option th:each="department:${departments}" th:text="${department.name}" th:value="${'department-' + department.id}"></option>
                                     </optgroup>
-
                                     <optgroup label="Branches">
                                         <option th:each="branch:${branches}" th:text="${branch.name}" th:value="${'branch-' + branch.id}"></option>
                                     </optgroup>
                                 </select>
-
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('assignedToId')}" th:errors="*{assignedToId}">Assignment is required</div>
                             </div>
                             <div class="col-12">
@@ -296,8 +299,19 @@
 <th:block layout:fragment="scripts">
     <script>
         $(document).ready(function() {
-            // Initialize Select2 for searchable dropdowns
-            $('#assignedTo').select2();
+            // Initialize Select2 for searchable dropdowns with proper configuration
+            $('#assignedTo').select2({
+                dropdownParent: $('#addServiceModal'),
+                width: '100%'
+            });
+
+            // Reinitialize Select2 when modal is shown to ensure proper functionality
+            $('#addServiceModal').on('shown.bs.modal', function () {
+                $('#assignedTo').select2({
+                    dropdownParent: $('#addServiceModal'),
+                    width: '100%'
+                });
+            });
 
             // Initialize DataTable
             const servicesTable = $('#servicesTable').DataTable({
@@ -305,8 +319,6 @@
                 pageLength: 10,
                 dom: '<"row"<"col-sm-6"l><"col-sm-6"f>>rtip'
             });
-
-
 
             $('#searchButton').on('click', function() {
                 servicesTable.search($('#searchInput').val()).draw();
@@ -357,6 +369,8 @@
                 $('#serviceForm')[0].reset();
                 $('#addServiceModalLabel').text('Add New Service');
                 $('#serviceId').val('');
+                // Destroy and reinitialize Select2 to ensure it works properly next time
+                $('#assignedTo').select2('destroy');
             });
 
             // Save Service
