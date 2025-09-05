@@ -21,7 +21,9 @@ public class DataInitializer {
     public void seedAdmin() {
         if (employeeRepository.findByUsername("admin").isEmpty()) {
             EmployeeEntity admin = new EmployeeEntity();
+            admin.setName("admin");
             admin.setUsername("admin");
+            admin.setStatus("Active");
             admin.setPassword(passwordEncoder.encode("admin"));
             admin.setRole("ADMIN");
             employeeRepository.save(admin);

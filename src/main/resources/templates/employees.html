@@ -86,7 +86,7 @@
                         <td>
                             <img th:src="${employee.avatar}" alt="Avatar" class="employee-avatar">
                         </td>
-                        <td th:text="${employee.id}">EMP-001</td>
+                        <td th:text="${employee.badgeNumber}">EMP-001</td>
                         <td th:text="${employee.name}">John Doe</td>
                         <td th:text="${employee.email}">john.doe@example.com</td>
                         <td th:text="${employee.department}">IT</td>
@@ -107,7 +107,7 @@
                             <button class="btn btn-sm btn-primary edit-employee" data-bs-toggle="modal" data-bs-target="#addEmployeeModal" th:data-id="${employee.id}">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-sm btn-danger delete-employee" th:data-id="${employee.id}" th:if="${#authentication.name == 'admin'}">
+                            <button class="btn btn-sm btn-danger delete-employee" th:data-id="${employee.id}" th:if="${currentUser.username == 'admin'}">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </td>
@@ -138,7 +138,7 @@
 
                             <div class="col-md-6">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                                <input type="email" class="form-control" id="email" th:field="*{email}">
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Valid email is required</div>
                             </div>
 
@@ -172,8 +172,14 @@
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('status')}" th:errors="*{status}">Status is required</div>
                             </div>
 
+                            <div class="col-md-6">
+                                <label for="status" class="form-label">Badge Number</label>
+                                <input type="text" class="form-control" id="badgeNumber" th:field="*{badgeNumber}">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('badgeNumber')}" th:errors="*{badgeNumber}">badgeNumber is required</div>
+                            </div>
+
                             <div class="col-12">
-                                <label for="branchId" class="form-label">branchId</label>
+                                <label for="branchId" class="form-label">Branch</label>
                                 <select class="form-select" id="branchId" th:field="*{branchId}">
                                     <option value="">Dammam</option>
                                     <option value="">Jeddah</option>
@@ -356,11 +362,10 @@
                 // For this example, we'll just validate and show a success message
                 if ($('#employeeForm')[0].checkValidity()) {
                     $('#addEmployeeModal').modal('hide');
-                    const alert = $('<div class="alert alert-success alert-dismissible fade show" role="alert">Employee saved successfully.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
-                    $('.content').prepend(alert);
-                    setTimeout(function() {
-                        alert.alert('close');
-                    }, 3000);
+
+                    $('#employeeForm').submit();
+
+
                 } else {
                     $('#employeeForm')[0].reportValidity();
                 }

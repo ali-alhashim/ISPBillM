@@ -4,6 +4,11 @@
       layout:decorate="~{layout}">
 <head>
     <title>Services Management</title>
+    <style>
+        .select2-container--open {
+    z-index: 99999;
+}
+    </style>
 </head>
 <body>
 <div layout:fragment="page-title">Services Management</div>
@@ -40,12 +45,14 @@
                     </div>
                     <div class="col-md-3">
                         <label for="assignedToFilter" class="form-label">Assigned To</label>
+
                         <select class="form-select" id="assignedToFilter" name="assignedTo">
                             <option value="">All</option>
                             <option value="employee">Employees</option>
                             <option value="department">Departments</option>
                             <option value="branch">Branches</option>
                         </select>
+
                     </div>
                     <div class="col-md-3">
                         <label for="searchInput" class="form-label">Search</label>
@@ -183,9 +190,23 @@
                             </div>
                             <div class="col-12">
                                 <label for="assignedTo" class="form-label">Assign To</label>
+
                                 <select class="form-select" id="assignedTo" th:field="*{assignedToId}" required>
                                     <option value="">Select Employee, Department or Branch</option>
+
+                                    <optgroup label="Employees">
+                                        <option th:each="employee:${employees}" th:text="${employee.name}" th:value="${'employee-' + employee.id}"></option>
+                                    </optgroup>
+
+                                    <optgroup label="Departments">
+                                        <option th:each="department:${departments}" th:text="${department.name}" th:value="${'department-' + department.id}"></option>
+                                    </optgroup>
+
+                                    <optgroup label="Branches">
+                                        <option th:each="branch:${branches}" th:text="${branch.name}" th:value="${'branch-' + branch.id}"></option>
+                                    </optgroup>
                                 </select>
+
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('assignedToId')}" th:errors="*{assignedToId}">Assignment is required</div>
                             </div>
                             <div class="col-12">
@@ -276,26 +297,7 @@
     <script>
         $(document).ready(function() {
             // Initialize Select2 for searchable dropdowns
-            $('#assignedTo').select2({
-                placeholder: "Search for an employee, department or branch...",
-                allowClear: true,
-                ajax: {
-                    url: '/api/search/assignable',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function(params) {
-                        return {
-                            q: params.term
-                        };
-                    },
-                    processResults: function(data) {
-                        return {
-                            results: data
-                        };
-                    },
-                    cache: true
-                }
-            });
+            $('#assignedTo').select2();
 
             // Initialize DataTable
             const servicesTable = $('#servicesTable').DataTable({
@@ -304,10 +306,7 @@
                 dom: '<"row"<"col-sm-6"l><"col-sm-6"f>>rtip'
             });
 
-            // Filter functionality
-            $('#providerFilter, #statusFilter, #assignedToFilter').on('change', function() {
-                servicesTable.draw();
-            });
+
 
             $('#searchButton').on('click', function() {
                 servicesTable.search($('#searchInput').val()).draw();

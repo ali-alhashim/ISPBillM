@@ -2,6 +2,7 @@ package com.ISPBillM.dto;
 
 
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.web.multipart.MultipartFile;
 
 public class EmployeeDto {
 
@@ -17,7 +18,7 @@ public class EmployeeDto {
 
     private String note;
 
-    private FilePart avatar;
+    private MultipartFile avatar;
 
 
     private String branchId;
@@ -119,12 +120,11 @@ public class EmployeeDto {
         this.note = note;
     }
 
-
-    public FilePart getAvatar() {
+    public MultipartFile getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(FilePart avatar) {
+    public void setAvatar(MultipartFile avatar) {
         this.avatar = avatar;
     }
 }

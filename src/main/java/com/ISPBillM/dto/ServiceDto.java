@@ -21,7 +21,7 @@ public class ServiceDto {
 
     private String status;
 
-    private String assignedToId;
+    private String assignedToId; // Employee, department , branch
 
     private String notes;
 

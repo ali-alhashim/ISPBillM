@@ -158,7 +158,11 @@ public class EmployeeEntity implements UserDetails {
     public int assignedServicesCount()
     {
 
-        return this.getServices().size();
+        if (this.getServices() != null) {
+            return this.getServices().size();
+        } else {
+            return 0; // Return 0 if services is null
+        }
     }
 
     public String getStatus() {
