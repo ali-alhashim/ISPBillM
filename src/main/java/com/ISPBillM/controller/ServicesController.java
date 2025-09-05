@@ -72,6 +72,8 @@ public class ServicesController {
 
         String assignedToId = serviceDto.getAssignedToId();
 
+        List<ServiceEntity> theServices = new ArrayList<>();
+
         // Check if the string starts with "employee--"
         if (assignedToId.startsWith("employee--")) {
             // If it does, extract the part after "employee--"
@@ -86,14 +88,14 @@ public class ServicesController {
             System.out.println("Extracted employee ID: " + employeeId);
             serviceRepository.save(newService);
 
-            List<ServiceEntity> employeeServices = new ArrayList<>();
+
             if(employee.getServices() != null)
             {
-                employeeServices = employee.getServices();
+                theServices = employee.getServices();
             }
 
-            employeeServices.add(newService);
-            employee.setServices(employeeServices);
+            theServices.add(newService);
+            employee.setServices(theServices);
             employeeRepository.save(employee);
 
         } else if (assignedToId.startsWith("department--")) {
@@ -104,6 +106,15 @@ public class ServicesController {
             System.out.println("Extracted department ID: " + departmentId);
             serviceRepository.save(newService);
 
+            if(department.getServices() != null)
+            {
+                theServices = department.getServices();
+            }
+
+            theServices.add(newService);
+            department.setServices(theServices);
+            departmentRepository.save(department);
+
         } else if (assignedToId.startsWith("branch--")) {
             // Handle the branch case
             String branchId = assignedToId.substring("branch--".length());
@@ -111,6 +122,15 @@ public class ServicesController {
             newService.setBranch(branch);
             System.out.println("Extracted branch ID: " + branchId);
             serviceRepository.save(newService);
+
+            if(branch.getServices() != null)
+            {
+                theServices = branch.getServices();
+            }
+
+            theServices.add(newService);
+            branch.setServices(theServices);
+            branchRepository.save(branch);
 
         } else {
             // Handle cases where the ID doesn't match any of the prefixes

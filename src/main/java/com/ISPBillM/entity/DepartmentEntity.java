@@ -23,6 +23,34 @@ public class DepartmentEntity {
     @DBRef
     private BranchEntity branch;
 
+    private String status;
+    private String description;
+    private String address;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public String getId() {
         return id;
     }
@@ -61,5 +89,29 @@ public class DepartmentEntity {
 
     public void setBranch(BranchEntity branch) {
         this.branch = branch;
+    }
+
+    public int employeeCount()
+    {
+       if(this.getEmployees() != null)
+       {
+           return this.getEmployees().size();
+       }
+       else
+       {
+           return 0;
+       }
+    }
+
+    public int serviceCount()
+    {
+        if(this.getServices() !=null)
+        {
+            return this.getServices().size();
+        }
+        else
+        {
+            return 0;
+        }
     }
 }

@@ -6,6 +6,7 @@ import com.ISPBillM.entity.EmployeeEntity;
 import com.ISPBillM.entity.ServiceEntity;
 import com.ISPBillM.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,11 +33,16 @@ public class EmployeesController {
         List<EmployeeEntity> employees = employeeRepository.findAll();
 
         //get the current user
-        EmployeeEntity currentUser = employeeRepository.findByUsername("admin").orElse(null);
+        EmployeeEntity currentUser =(EmployeeEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         if(currentUser ==null)
         {
             return "redirect:/login";
         }
+
+
+
+
 
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("employee", employeeDto);
