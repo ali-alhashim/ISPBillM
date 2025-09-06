@@ -41,6 +41,7 @@ public class DepartmentController {
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("departments",departments);
         model.addAttribute("department",department);
+        model.addAttribute("currentPage", "departments");
 
         return "departments";
     }

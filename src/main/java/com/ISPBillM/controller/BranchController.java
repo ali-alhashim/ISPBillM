@@ -41,6 +41,7 @@ public class BranchController {
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("branches",branches);
         model.addAttribute("branch",branch);
+        model.addAttribute("currentPage", "branches");
 
         return "branches";
     }

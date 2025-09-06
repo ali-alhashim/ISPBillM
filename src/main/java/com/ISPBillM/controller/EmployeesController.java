@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -91,21 +92,67 @@ public class EmployeesController {
         // Set Department
         String departmentId = employeeDto.getDepartmentId();
         DepartmentEntity theDepartment = departmentRepository.findById(departmentId).orElse(null);
+
+
         if(theDepartment !=null)
         {
             newEmployee.setDepartment(theDepartment);
+
+            List<EmployeeEntity> employeesDepartment = new ArrayList<>();
+            if(theDepartment.getEmployees() !=null)
+            {
+                employeesDepartment = theDepartment.getEmployees();
+                employeesDepartment.add(newEmployee);
+                theDepartment.setEmployees(employeesDepartment);
+
+            }
+            else
+            {
+                employeesDepartment.add(newEmployee);
+                theDepartment.setEmployees(employeesDepartment);
+
+            }
         }
         // set Branch
         String branchId = employeeDto.getBranchId();
         BranchEntity theBranch = branchRepository.findById(branchId).orElse(null);
+
         if(theBranch !=null)
         {
             newEmployee.setBranch(theBranch);
+
+            List<EmployeeEntity> employeesBranch = new ArrayList<>();
+            if(theBranch.getEmployees() !=null)
+            {
+                employeesBranch = theBranch.getEmployees();
+                employeesBranch.add(newEmployee);
+                theBranch.setEmployees(employeesBranch);
+
+            }
+            else
+            {
+                employeesBranch.add(newEmployee);
+                theBranch.setEmployees(employeesBranch);
+
+            }
         }
 
         //upload avatar if not empty and set the path
 
         employeeRepository.save(newEmployee);
+
+        if(theBranch !=null)
+        {
+            branchRepository.save(theBranch);
+        }
+
+        if(theDepartment !=null)
+        {
+            departmentRepository.save(theDepartment);
+        }
+
+
+
 
 
         // Add a success flash message for a better user experience
