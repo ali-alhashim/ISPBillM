@@ -74,6 +74,7 @@
                         <th>Employee ID</th>
                         <th>Name</th>
                         <th>Email</th>
+                        <th>Branch</th>
                         <th>Department</th>
                         <th>Role</th>
                         <th>Assigned Services</th>
@@ -89,7 +90,8 @@
                         <td th:text="${employee.badgeNumber}">EMP-001</td>
                         <td th:text="${employee.name}">John Doe</td>
                         <td th:text="${employee.email}">john.doe@example.com</td>
-                        <td th:text="${employee.department}">IT</td>
+                        <td th:text="${employee.branch !=null ? employee.branch.name : '-' }">DAMMAM</td>
+                        <td th:text="${employee.department != null ? employee.department.name : '-'}"></td>
                         <td>
                             <span class="badge bg-primary" th:if="${employee.role == 'ADMIN'}">Admin</span>
                             <span class="badge bg-info" th:if="${employee.role == 'USER'}">User</span>
@@ -181,8 +183,8 @@
                             <div class="col-12">
                                 <label for="branchId" class="form-label">Branch</label>
                                 <select class="form-select" id="branchId" th:field="*{branchId}">
-                                    <option value="">Dammam</option>
-                                    <option value="">Jeddah</option>
+                                    <option value="">Select Branch</option>
+                                    <option th:each="branch:${branches}" th:value="${branch.id}" th:text="${branch.name}">Jeddah</option>
                                 </select>
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('branchId')}" th:errors="*{branchId}">branch  is required</div>
                             </div>

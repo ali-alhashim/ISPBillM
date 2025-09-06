@@ -138,7 +138,7 @@
                 <table class="table table-bordered" id="paymentsTable" width="100%" cellspacing="0">
                     <thead>
                     <tr>
-                        <th>Service ID</th>
+                        <th>Service Type</th>
                         <th>Account Number</th>
                         <th>Billing Period</th>
                         <th>Due Date</th>
@@ -151,10 +151,10 @@
                     </thead>
                     <tbody>
                     <tr th:each="payment : ${payments}">
-                        <td th:text="${payment.serviceId}">SRV-001</td>
-                        <td th:text="${payment.accountNumber}">ACC-12345</td>
-                        <td th:text="${payment.billingPeriod}">September 2023</td>
-                        <td th:text="${payment.dueDate}">2023-09-05</td>
+                        <td th:text="${payment.service.type}">5G Internet</td>
+                        <td th:text="${payment.service.accountNumber}">ACC-12345</td>
+                        <td th:text="${payment.bill.periodFrom + '-' +payment.bill.periodTo }">September 1 2023 - September 30 2023</td>
+                        <td th:text="${payment.bill.dueDate}">2023-09-05</td>
                         <td th:text="${payment.paymentDate}">2023-09-03</td>
                         <td th:text="${payment.amount}">$25.00</td>
                         <td>
@@ -191,7 +191,7 @@
                 </div>
                 <div class="modal-body">
                     <form id="paymentForm" th:action="@{/payments/save}" th:object="${payment}" method="post">
-                        <input type="hidden" id="paymentId" th:field="*{id}">
+
                         <div class="mb-3">
                             <label for="service" class="form-label">Service</label>
                             <select class="form-select" id="service" th:field="*{serviceId}" required>
@@ -203,9 +203,11 @@
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('serviceId')}" th:errors="*{serviceId}">Service is required</div>
                         </div>
                         <div class="mb-3">
-                            <label for="billingPeriod" class="form-label">Billing Period</label>
-                            <input type="text" class="form-control" id="billingPeriod" th:field="*{billingPeriod}" placeholder="e.g., September 2023" required>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('billingPeriod')}" th:errors="*{billingPeriod}">Billing Period is required</div>
+                            <label for="periodFrom" class="form-label">Billing Period</label>
+                            <input type="date" class="form-control" id="periodFrom" th:field="*{periodFrom}" required>
+                            <input type="date" class="form-control" id="periodTo" th:field="*{periodTo}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('periodFrom')}" th:errors="*{periodFrom}">Billing Period is required</div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('periodTo')}" th:errors="*{periodTo}">Billing Period is required</div>
                         </div>
                         <div class="mb-3">
                             <label for="dueDate" class="form-label">Due Date</label>

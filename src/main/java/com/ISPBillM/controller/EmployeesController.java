@@ -89,8 +89,19 @@ public class EmployeesController {
         newEmployee.setStatus(employeeDto.getStatus());
 
         // Set Department
-
+        String departmentId = employeeDto.getDepartmentId();
+        DepartmentEntity theDepartment = departmentRepository.findById(departmentId).orElse(null);
+        if(theDepartment !=null)
+        {
+            newEmployee.setDepartment(theDepartment);
+        }
         // set Branch
+        String branchId = employeeDto.getBranchId();
+        BranchEntity theBranch = branchRepository.findById(branchId).orElse(null);
+        if(theBranch !=null)
+        {
+            newEmployee.setBranch(theBranch);
+        }
 
         //upload avatar if not empty and set the path
 

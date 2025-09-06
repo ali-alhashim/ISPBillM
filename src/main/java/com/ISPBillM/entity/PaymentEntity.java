@@ -15,9 +15,12 @@ public class PaymentEntity {
     @DBRef
     private BillEntity bill;
 
+    @DBRef
+    private ServiceEntity service;
+
     private LocalDate paymentDate;
 
-    private String method; // SADAD , Bank Transferred, cash, bank cheque
+    private String paymentMethod; // SADAD , Bank Transferred, cash, bank cheque
 
     private String paymentFile;   // soft copy of payment file upload and save the path
 
@@ -26,6 +29,16 @@ public class PaymentEntity {
     private String currancy; // USD SAR
 
     private String note;
+
+    private String status;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getId() {
         return id;
@@ -51,12 +64,12 @@ public class PaymentEntity {
         this.paymentDate = paymentDate;
     }
 
-    public String getMethod() {
-        return method;
+    public String getPaymentMethod() {
+        return paymentMethod;
     }
 
-    public void setMethod(String method) {
-        this.method = method;
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
     public String getPaymentFile() {
@@ -89,5 +102,13 @@ public class PaymentEntity {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public ServiceEntity getService() {
+        return service;
+    }
+
+    public void setService(ServiceEntity service) {
+        this.service = service;
     }
 }
