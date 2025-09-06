@@ -22,6 +22,28 @@ public class BranchEntity {
     @DBRef
     private List<DepartmentEntity> departments;
 
+    @DBRef
+    private List<EmployeeEntity> employees;
+
+    private String status;
+    private String description;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getId() {
         return id;
     }
@@ -60,5 +82,37 @@ public class BranchEntity {
 
     public void setDepartments(List<DepartmentEntity> departments) {
         this.departments = departments;
+    }
+
+    public List<EmployeeEntity> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(List<EmployeeEntity> employees) {
+        this.employees = employees;
+    }
+
+    public int employeeCount()
+    {
+        if(this.getEmployees() != null)
+        {
+            return this.getEmployees().size();
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    public int serviceCount()
+    {
+        if(this.getServices() !=null)
+        {
+            return this.getServices().size();
+        }
+        else
+        {
+            return 0;
+        }
     }
 }
