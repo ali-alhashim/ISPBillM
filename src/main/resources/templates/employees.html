@@ -144,13 +144,13 @@
 
                             <div class="col-md-6">
                                 <label for="department" class="form-label">Department</label>
+
                                 <select class="form-select" id="department" th:field="*{departmentId}" required>
                                     <option value="">Select Department</option>
-                                    <option value="IT">IT</option>
-                                    <option value="Finance">Finance</option>
-                                    <option value="HR">HR</option>
-                                    <option value="Operations">Operations</option>
+                                    <option th:each="department:${departments}" th:value="${department.id}"  th:text="${department.name}">IT</option>
+
                                 </select>
+
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('departmentId')}" th:errors="*{departmentId}">Department is required</div>
                             </div>
                             <div class="col-md-6">

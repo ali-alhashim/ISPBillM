@@ -2,8 +2,12 @@ package com.ISPBillM.controller;
 
 import com.ISPBillM.dto.EmployeeDto;
 import com.ISPBillM.dto.ServiceDto;
+import com.ISPBillM.entity.BranchEntity;
+import com.ISPBillM.entity.DepartmentEntity;
 import com.ISPBillM.entity.EmployeeEntity;
 import com.ISPBillM.entity.ServiceEntity;
+import com.ISPBillM.repository.BranchRepository;
+import com.ISPBillM.repository.DepartmentRepository;
 import com.ISPBillM.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +29,12 @@ public class EmployeesController {
     @Autowired
     EmployeeRepository employeeRepository;
 
+    @Autowired
+    DepartmentRepository departmentRepository;
+
+    @Autowired
+    BranchRepository branchRepository;
+
     @GetMapping("/employees")
     public String employees(Model model) {
         model.addAttribute("currentPage", "employees");
@@ -41,9 +51,11 @@ public class EmployeesController {
         }
 
 
+        List<DepartmentEntity> departments = departmentRepository.findAll();
+        List<BranchEntity> branches = branchRepository.findAll();
 
-
-
+        model.addAttribute("departments", departments);
+        model.addAttribute("branches", branches);
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("employee", employeeDto);
         model.addAttribute("employees", employees);

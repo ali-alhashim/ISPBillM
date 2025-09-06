@@ -111,10 +111,18 @@
                     </li>
                     <li>
                         <a href="/departments" class="nav-link" th:classappend="${currentPage == 'departments' ? 'active' : ''}">
-                            <i class="fas fa-building me-2"></i>
+                            <i class="fas fa-object-group  me-2"></i>
                             Departments
                         </a>
                     </li>
+
+                    <li>
+                        <a href="/branches" class="nav-link" th:classappend="${currentPage == 'branches' ? 'active' : ''}">
+                            <i class="fas fa-building me-2"></i>
+                            Branches
+                        </a>
+                    </li>
+
                 </ul>
                 <hr>
                 <div class="dropdown">
